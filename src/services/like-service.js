@@ -1,5 +1,4 @@
 import  {LikeRepository, TweetRepository}  from '../repo/index.js';
-import Tweet from '../models/tweet.js';
 
 class LikeService {
     constructor() {
@@ -8,9 +7,8 @@ class LikeService {
     }
 
     async toggleLike(modelId, modelType, userId) { // /api/v1/likes/toggle?id=modelid&type=Tweet
-        console.log(modelId, modelType, userId);
         if(modelType == 'Tweet') {
-            var likeable = await this.tweetRepository.find(modelId)
+            var likeable = await this.tweetRepository.get(modelId)
         } else if(modelType == 'Comment') {
             // TODO
         } else {
@@ -21,11 +19,11 @@ class LikeService {
             onModel: modelType,
             likeable: modelId
         });
-        console.log("exists", exists);
+        
         if(exists) {
             likeable.likes.pull(exists.id);
             await likeable.save();
-            await exists.remove();
+            await exists.deleteOne();
             var isAdded = false;
 
         } else {
